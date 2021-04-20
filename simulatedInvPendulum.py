@@ -131,8 +131,7 @@ for i in range(len(sol.t)):
     sendData = str(sendList)
     print(sendData)
     receivedMessage = connection.recv(MESSAGE_LENGTH).decode()
-    if receivedMessage == ACKNOWELEDGE_MESSAGE:
-        
+    if receivedMessage == ACKNOWELEDGE_MESSAGE:   
         break
 
 connection.close()
