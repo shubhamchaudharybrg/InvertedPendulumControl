@@ -1,8 +1,5 @@
-from InvertedPendulum import InvertedPendulum
 import socket
 import numpy as np
-import cv2
-from InvertedPendulum import InvertedPendulum
 from scipy.integrate import solve_ivp
 import control
 import code
@@ -112,13 +109,14 @@ def y_dot( t, y ):
 sol = solve_ivp(y_dot, [0, 20], [ 0.0, 0., np.pi/2 + 0.01, 0. ],   t_eval=np.linspace( 0, 20, 100)  )
 
 for i in range(len(sol.t)):
-    sendList = [sol.y[0,i], sol.y[1,i], sol.y[2,i], sol.y[3,i], sol.t[i]]
+    sendList = [str(sol.y[0,i]), str(sol.y[1,i]), str(sol.y[2,i]), str(sol.y[3,i]), str(sol.t[i])]
     sendData = ",".join(sendList)
     print(sendData)
     
     # receivedMessage = connection.recv(MESSAGE_LENGTH).decode()
     while connection.recv(MESSAGE_LENGTH).decode()!= ACKNOWELEDGE_MESSAGE:
         print("Waiting for Acknowledgement....")    
-    connection.send(bytes(sendData))
-    
+    connection.send(bytes(sendData, "utf-8"))
+
+connection.send(bytes(DISCONNECT_MESSAGE, "utf-8"))
 connection.close()
