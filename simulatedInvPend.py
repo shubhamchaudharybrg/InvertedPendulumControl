@@ -4,10 +4,10 @@ import cv2
 from invertedPendulum import InvertedPendulum
 
 IP_ADDRESS = "127.0.0.1"
-PORT = 1234
+PORT = 12345
 DISCONNECT_MESSAGE = "DISCONNECT"
 ACKNOWELEDGE_MESSAGE = "ACK"
-MESSAGE_LENGTH = 32
+MESSAGE_LENGTH = 512
 
 pendulum = InvertedPendulum()
 
@@ -29,8 +29,11 @@ while receivedData != DISCONNECT_MESSAGE:
     rendered = pendulum.step( [msg[0], msg[1], msg[2], msg[3]], msg[4] )
     cv2.imshow( 'image', rendered )
     cv2.moveWindow( 'image', 100, 100 )
+    
+    if cv2.waitKey(30) == ord('q'):
+        break
 
     s.send(bytes(ACKNOWELEDGE_MESSAGE, "utf-8"))
-
+    
     # if cv2.waitKey(30) == ord('q'):
     #     break
