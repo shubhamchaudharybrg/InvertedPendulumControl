@@ -4,7 +4,7 @@ import cv2
 from invertedPendulum import InvertedPendulum
 
 IP_ADDRESS = "127.0.0.1"
-PORT = 12345
+PORT = 1234
 DISCONNECT_MESSAGE = "DISCONNECT"
 ACKNOWELEDGE_MESSAGE = "ACK"
 MESSAGE_LENGTH = 512
