@@ -116,6 +116,7 @@ for i in range(len(sol.t)):
     # receivedMessage = connection.recv(MESSAGE_LENGTH).decode()
     while connection.recv(MESSAGE_LENGTH).decode()!= ACKNOWELEDGE_MESSAGE:
         print("Waiting for Acknowledgement....")    
+    print("ACK Received")
     connection.send(bytes(sendData, "utf-8"))
 
 connection.send(bytes(DISCONNECT_MESSAGE, "utf-8"))
