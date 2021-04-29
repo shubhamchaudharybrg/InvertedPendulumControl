@@ -1,15 +1,19 @@
-import socket
-import numpy as np
-from scipy.integrate import solve_ivp
-import control
-import code, time 
-# import simulatedScenarios as sims
+# This is the remote controller from simulated inverted pendulum.
+# It utilizes PID control for stabalizing the pendulum.
+
+import socket, time
+from pyconsys.PIDControl import PIDControl
 
 IP_ADDRESS = "127.0.0.1"
-PORT = 1234
+PORT = 12345
 DISCONNECT_MESSAGE = "DISCONNECT"
 ACKNOWELEDGE_MESSAGE = "ACK"
-MESSAGE_LENGTH = 512
+RTS = "RTS"
+CTS = "CTS"
+MESSAGE_LENGTH = 128
+PID_CONTROL = PIDControl(105, 83, 28)  # Kp, Ki, Kd
+
+pendulumAngle = 0 # Receives from simulated pendulum
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((IP_ADDRESS,PORT))
@@ -17,117 +21,40 @@ s.listen()
 
 connection, adreess = s.accept()
 print("Connected")
-receivedData = ""
 
-###########################################################################################
-# Controller
-# class MyLinearizedSystem:
-#     def __init__(self):
-#         g = 9.8
-#         L = 1.5
-#         m = 1.0
-#         M = 5.0
-#         d1 = 1.0
-#         d2 = 0.5
+def getControl(angle):
+    desiredAngle = 0
+    error = (desiredAngle - pendulumAngle*-1)
+    control = PID_CONTROL.get_xa(error) # Applying PID
 
-#         # Pendulum up (linearized eq)
-#         # Eigen val of A : array([[ 1.        , -0.70710678, -0.07641631,  0.09212131] )
-#         _q = (m+M) * g / (M*L)
-#         self.A = np.array([\
-#                     [0,1,0,0], \
-#                     [0,-d1, -g*m/M,0],\
-#                     [0,0,0,1.],\
-#                     [0,d1/L,_q,-d2] ] )
+    # pendelumLJoin.maxMotorTorque = 1000
+    # pendelumRJoin.maxMotorTorque = 1000
+    # pendelumLJoin.motorSpeed = y
+    # pendelumRJoin.motorSpeed = y
+    return control
 
-#         self.B = np.expand_dims( np.array( [0, 1.0/M, 0., -1/(M*L)] ) , 1 ) # 4x1
+while True:
+    while connection.recv(MESSAGE_LENGTH).decode() != RTS:
+        print("Waiting for RTS Message....")   
+    print("Received RTS") 
 
-#     def compute_K(self, desired_eigs = [-0.1, -0.2, -0.3, -0.4] ):
-#         # print('[compute_K] desired_eigs=', desired_eigs)
-#         self.K = control.place( self.A, self.B,  desired_eigs )
+    connection.send(bytes(CTS, "utf-8"))
+    print("CTS Sent")
 
-#     def get_K(self):
-#         return self.K
+    # while connection.recv(MESSAGE_LENGTH) == None:
+    #     print("Waiting for data....")
 
-# # Global Variables
-# ss = MyLinearizedSystem()
-
-# # Arbitrarily set Eigen Values
-# #ss.compute_K(desired_eigs = np.array([-.1, -.2, -.3, -.4])*3. ) # Arbitarily set desired eigen values
-
-# # Eigen Values set by LQR
-# Q = np.diag( [1,1,1,1.] )
-# R = np.diag( [1.] )
-# # K : State feedback for stavility
-# # S : Solution to Riccati Equation
-# # E : Eigen values of the closed loop system
-# K, S, E = control.lqr( ss.A, ss.B, Q, R )
-# ss.compute_K(desired_eigs = E ) # Arbitarily set desired eigen values
-
-
-
-# # This will be our LQR Controller.
-# # LQRs are more theoritically grounded, they are a class of optimal control algorithms.
-# # The control law is u = KY. K is the unknown which is computed as a solution to minimization problem.
-# def u( t , y ):
-#     u_ = -np.matmul( ss.K , y - np.array([0,0,np.pi/2.,0]) ) # This was important
-#     # print 'u()', 't=',t, 'u_=', u_
-#     # code.interact(local=dict(globals(), **locals()))
-#     # return 0.1
-#     return u_[0]
-
-# # Pendulum and cart system (non-linear eq). The motors on the cart turned at fixed time. In other words
-# # The motors are actuated to deliver forward x force from t=t1 to t=t2.
-# # Y : [ x, x_dot, theta, theta_dot]
-# # Return \dot(Y)
-# def y_dot( t, y ):
-#     g = 9.8 # Gravitational Acceleration
-#     L = 1.5 # Length of pendulum
-
-#     m = 1.0 #mass of bob (kg)
-#     M = 5.0  # mass of cart (kg)
-
-#     d1 = 1.0
-#     d2 = 0.5
-
-
-#     x_ddot = u(t, y) - m*L*y[3]*y[3] * np.cos( y[2] ) + m*g*np.cos(y[2]) *  np.sin(y[2])
-#     x_ddot = x_ddot / ( M+m-m* np.sin(y[2])* np.sin(y[2]) )
-
-#     theta_ddot = -g/L * np.cos( y[2] ) -  np.sin( y[2] ) / L * x_ddot
-
-
-#     damping_x =  - d1*y[1]
-#     damping_theta =  - d2*y[3]
-
-#     return [ y[1], x_ddot + damping_x, y[3], theta_ddot + damping_theta ]
-
-# # Both cart and the pendulum can move.
-
-# # We need to write the Euler-lagrange equations for the both the
-# # systems (bob and cart). The equations are complicated expressions. Although
-# # it is possible to derive with hand. The entire notes are in media folder or the
-# # blog post for this entry. Otherwse in essense it is very similar to free_fall_pendulum.py
-# # For more comments see free_fall_pendulum.py
-# sol = solve_ivp(y_dot, [0, 20], [ 2, 0.,  np.pi/2, 0. ],   t_eval=np.linspace( 0, 20, 100)  )
-# # print(sol.t[0:10])
-# # print(sims.packetLoss(sol.t)[0:10])
-##############################################################################################################
-
-
-for i in range(len(sol.t)):
-    # # sendList = [str(sol.y[0,i]), str(sol.y[1,i]), str(sol.y[2,i]), str(sol.y[3,i]), str(sol.t[i])]
-    # sendData = ",".join(sendList)
-    # print(sendData)
-    # ran = np.random.randint(1,10)
-    # if ran == 7:
-    #     time.sleep(2)
-    # # time.sleep(n)
+    time.sleep(0.0001)  # 100 micro-second
+    _angle = float(connection.recv(MESSAGE_LENGTH).decode())
+    print(f"Received angle : {_angle}")
     
-    # receivedMessage = connection.recv(MESSAGE_LENGTH).decode()
-    while connection.recv(MESSAGE_LENGTH).decode()!= ACKNOWELEDGE_MESSAGE:
-        print("Waiting for Acknowledgement....")    
-    print("ACK Received")
-    connection.send(bytes(sendData, "utf-8"))
+    ctrl = getControl(_angle)
+    print(f"Control : {ctrl}")
 
-connection.send(bytes(DISCONNECT_MESSAGE, "utf-8"))
-connection.close()
+    connection.send(bytes(ACKNOWELEDGE_MESSAGE, "utf-8"))
+    print("ACK Message Sent")
+
+    connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
+
+# connection.send(bytes(DISCONNECT_MESSAGE, "utf-8"))
+# connection.close()
