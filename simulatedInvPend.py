@@ -15,14 +15,17 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((IP_ADDRESS, PORT))
 print("Connected")
 
-receivedData = ""
-
-while receivedData != DISCONNECT_MESSAGE:
+while True:
     s.send(bytes(ACKNOWELEDGE_MESSAGE, "utf-8"))
     print("ACK Sent")
 
     receivedMsg = s.recv(MESSAGE_LENGTH).decode()
     # print(receiveqdData)
+    
+    if receivedMsg == DISCONNECT_MESSAGE:
+        s.close()
+        break
+
     tmpMsg = receivedMsg.split(",")
     msg = [float(i) for i in tmpMsg]
     print(msg)
@@ -30,13 +33,4 @@ while receivedData != DISCONNECT_MESSAGE:
     rendered = pendulum.step( [msg[0], msg[1], msg[2], msg[3]], msg[4] )
     cv2.imshow( 'image', rendered )
     cv2.waitKey(100)
-    # cv2.moveWindow( 'image', 100, 100 )
-    
-    # if cv2.waitKey(1000): #== ord('q'):
-    #     cv2.destroyWindow("image")
-
-    # s.send(bytes(ACKNOWELEDGE_MESSAGE, "utf-8"))
-    
-    
-    # if cv2.waitKey(30) == ord('q'):
-    #     break
+   
