@@ -34,11 +34,35 @@ def getControl(angle):
 
 while True:
 # for ii in range(10):
-#     if random.randint(1, 10) == 8:
-#         time.sleep(4)
+    # while connection.recv(MESSAGE_LENGTH).decode() != RTS:
+    #     print("Waiting for RTS Message....")   
+    # print("Received RTS") 
+
+    # connection.send(bytes(CTS, "utf-8"))
+    # print("CTS Sent")
+
+    # # while connection.recv(MESSAGE_LENGTH) == None:
+    # #     print("Waiting for data....")
+
+    # time.sleep(0.0001)  # 100 micro-second
+    # _angle = float(connection.recv(MESSAGE_LENGTH).decode())
+    # print(f"Received angle : {_angle} , Type : {type(_angle)}")
+    
+    # ctrl = getControl(_angle)
+    # print(f"Control : {ctrl}")
+
+    # if random.randint(1,10) == 8:
+    #     time.sleep(4)
+    # connection.send(bytes(ACKNOWELEDGE_MESSAGE, "utf-8"))
+    # print("ACK Message Sent")
+
+    # connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
 
     _angle = float(connection.recv(MESSAGE_LENGTH).decode())
     
     ctrl = getControl(_angle)
     print(f"angle : {_angle} , control : {ctrl}")
-    # connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
+    connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
+
+# connection.send(bytes(DISCONNECT_MESSAGE, "utf-8"))
+# connection.close()

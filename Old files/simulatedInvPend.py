@@ -110,31 +110,59 @@ class BodyPendulum(Framework):
 
     def Step(self, settings):
         super(BodyPendulum, self).Step(settings)
-        
+
+        # s.send(bytes(RTS, "utf-8"))
+        # print("RTS Message Sent")
+
+        # while s.recv(MESSAGE_LENGTH).decode() != CTS:
+        #     print("Waiting for CTS Message....")
+        # print("CTS Received")
+        # print(f"Current Angle : {self.pendulum.angle}, Round : {round(self.pendulum.angle,10)}")
+        # s.send(bytes(str(round(self.pendulum.angle,10)), "utf-8"))
+        # print("Angle Sent")
+
+        # while s.recv(MESSAGE_LENGTH).decode() != ACKNOWELEDGE_MESSAGE:
+        #     print("Waiting for ACK Message....")
+        # print("ACK Received")
+
+        # # while s.recv(MESSAGE_LENGTH) != None:
+        # #     print("Waiting for control....")
+
+        # time.sleep(0.000001)  # 1 micro-second
+        # controlSignal = float(s.recv(MESSAGE_LENGTH).decode())
+        # print(controlSignal)
+    
+        # # if receivedMsg == DISCONNECT_MESSAGE:
+        #     s.close()
+
         controlSignal = 0
-        # self.pendulum.maxMotorTorque = 1
+        maxMotorTorque = 1
 
         a = self.pendulum.angle
         s.send(bytes(str(round(a,10)), "utf-8"))
 
         try : 
-            print("Before recv")
             controlSignal = float(s.recv(MESSAGE_LENGTH).decode())
-            print("After recv")
             self.pendelumLJoin.maxMotorTorque = 1000
             self.pendelumRJoin.maxMotorTorque = 1000
             self.pendelumLJoin.motorSpeed = controlSignal
             self.pendelumRJoin.motorSpeed = controlSignal
-            print("try")
 
         except :
             self.pendelumLJoin.maxMotorTorque = 1
             self.pendelumRJoin.maxMotorTorque = 1
-            self.pendelumLJoin.motorSpeed = 0
-            self.pendelumRJoin.motorSpeed = 0
-            print("except")
+            self.pendelumLJoin.motorSpeed = controlSignal
+            self.pendelumRJoin.motorSpeed = controlSignal
         
         print(f"angle sent : {a} , control received : {controlSignal}")
+
+        # if self._auto == True and self._isLiving == True and controlSignal != 0:
+        #     self.pendelumLJoin.maxMotorTorque = maxMotorTorque
+        #     self.pendelumRJoin.maxMotorTorque = maxMotorTorque
+        #     self.pendelumLJoin.motorSpeed = controlSignal
+        #     self.pendelumRJoin.motorSpeed = controlSignal
+        
+
 
 if __name__ == "__main__":
     main(BodyPendulum)
