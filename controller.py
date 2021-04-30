@@ -7,7 +7,7 @@ from pyconsys.Control import Control
 from pyconsys.PIDControl import PIDControl
 
 IP_ADDRESS = "127.0.0.1"
-PORT = 1234
+PORT = 5432
 DISCONNECT_MESSAGE = "DISCONNECT"
 ACKNOWELEDGE_MESSAGE = "ACK"
 RTS = "RTS"
@@ -34,11 +34,11 @@ def getControl(angle):
 
 while True:
 # for ii in range(10):
-#     if random.randint(1, 10) == 8:
-#         time.sleep(4)
+    if random.randint(1, 1000) == 8:
+        time.sleep(20)
 
     _angle = float(connection.recv(MESSAGE_LENGTH).decode())
     
     ctrl = getControl(_angle)
     print(f"angle : {_angle} , control : {ctrl}")
-    # connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
+    connection.send(bytes(str(round(ctrl, 10)), "utf-8"))

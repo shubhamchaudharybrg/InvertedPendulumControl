@@ -5,7 +5,7 @@ from pyconsys.Control import Control
 from pyconsys.PIDControl import PIDControl
 
 IP_ADDRESS = "127.0.0.1"
-PORT = 1234
+PORT = 5432
 DISCONNECT_MESSAGE = "DISCONNECT"
 ACKNOWELEDGE_MESSAGE = "ACK"
 RTS = "RTS"
@@ -14,6 +14,7 @@ MESSAGE_LENGTH = 128
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((IP_ADDRESS, PORT))
+s.setblocking(False)
 print("Connected")
 
 
@@ -112,27 +113,21 @@ class BodyPendulum(Framework):
         super(BodyPendulum, self).Step(settings)
         
         controlSignal = 0
-        # self.pendulum.maxMotorTorque = 1
 
         a = self.pendulum.angle
         s.send(bytes(str(round(a,10)), "utf-8"))
 
         try : 
-            print("Before recv")
             controlSignal = float(s.recv(MESSAGE_LENGTH).decode())
-            print("After recv")
             self.pendelumLJoin.maxMotorTorque = 1000
             self.pendelumRJoin.maxMotorTorque = 1000
             self.pendelumLJoin.motorSpeed = controlSignal
             self.pendelumRJoin.motorSpeed = controlSignal
-            print("try")
-
         except :
             self.pendelumLJoin.maxMotorTorque = 1
             self.pendelumRJoin.maxMotorTorque = 1
             self.pendelumLJoin.motorSpeed = 0
             self.pendelumRJoin.motorSpeed = 0
-            print("except")
         
         print(f"angle sent : {a} , control received : {controlSignal}")
 
