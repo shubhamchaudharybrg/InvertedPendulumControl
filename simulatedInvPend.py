@@ -29,8 +29,6 @@ class BodyPendulum(Framework):
     def createWorld(self):
         self._isLiving = True
         self._auto = True
-        # self._pid_control = PIDControl(105, 83, 28)  # kp, ki, kd
-
 
         self.ground = self.world.CreateBody(
             shapes=b2EdgeShape(vertices=[(-25, 0), (25, 0)])
@@ -100,18 +98,6 @@ class BodyPendulum(Framework):
 
 
     def Keyboard(self, key):
-    #     if key == Keys.K_a:
-    #         if self._isLiving:
-    #             self._auto = True
-
-    #     elif key == Keys.K_m:
-    #         self._auto = False
-    #         if self._isLiving:
-    #             self.pendelumLJoin.motorSpeed = 0
-    #             self.pendelumLJoin.maxMotorTorque = 1
-    #             self.pendelumRJoin.motorSpeed = 0
-    #             self.pendelumRJoin.maxMotorTorque = 1
-        
         if key == Keys.K_n:
             if self._isLiving:
                 self.destroyWorld()
@@ -158,22 +144,3 @@ class BodyPendulum(Framework):
 
 if __name__ == "__main__":
     main(BodyPendulum)
-
-# while True:
-#     s.send(bytes(ACKNOWELEDGE_MESSAGE, "utf-8"))
-#     print("ACK Sent")
-
-#     receivedMsg = s.recv(MESSAGE_LENGTH).decode()
-#     # print(receiveqdData)
-    
-#     if receivedMsg == DISCONNECT_MESSAGE:
-#         s.close()
-#         break
-
-#     tmpMsg = receivedMsg.split(",")
-#     msg = [float(i) for i in tmpMsg]
-#     print(msg)
-
-#     rendered = pendulum.step( [msg[0], msg[1], msg[2], msg[3]], msg[4] )
-#     cv2.imshow( 'image', rendered )
-#     cv2.waitKey(100)
