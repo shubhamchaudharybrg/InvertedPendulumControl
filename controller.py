@@ -22,6 +22,32 @@ s.listen()
 connection, adreess = s.accept()
 print("Connected")
 
+def get_motor_speed(xe,kp,ki,kd,xe_old,sum,DELTA_T):
+    p_xa = xe * kp
+    d_xa = ki * (sum+xe) * DELTA_T
+    d_xa = kd * (xe - xe_old) / DELTA_T
+
+    PID_xa=p_xa + i_xa + d_xa
+    return PID_xa
+#     PID control.get_xa(xe) =  self._pControl.get_xa(xe) + self._iControl.get_xa(xe) + self._dControl.get_xa(xe)
+
+# pcontrol.get_xa(xe) = xe * self._kp
+# icontrol.get_xa(xe) = self._ki * (self._sum + xe) * self.DELTA_T
+# dcontrol.get_xa(xe) = self._kd * ((xe - self._xe_old) / self.DELTA_T)   
+# # self._xe_old = xe  -- needs to be done at client side
+
+# attributes required from client side - 
+
+# xe
+# self._kp
+# self._ki
+# self._kd
+# self._xe_old
+# self._sum
+# self.DELTA_T
+
+
+
 def getControl(angle):
     desiredAngle = 0
     error = (desiredAngle - pendulumAngle*-1)
