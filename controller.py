@@ -6,24 +6,21 @@ import random
 from pyconsys.Control import Control
 from pyconsys.PIDControl import PIDControl
 import simulatedScenarios as ss
+import numpy as np
 
 IP_ADDRESS = "127.0.0.1"
-PORT = 5432
+PORT = 1234
 DISCONNECT_MESSAGE = "DISCONNECT"
-# ACKNOWELEDGE_MESSAGE = "ACK"
-# RTS = "RTS"
-# CTS = "CTS"
-MESSAGE_LENGTH = 13
-PID_CONTROL = PIDControl(105, 100, 60)  # Kp, Ki, Kd 105, 83, 28
-
-pendulumAngle = 0 # Receives from simulated pendulum
+MESSAGE_LENGTH = 130 #13
+PID_CONTROL = PIDControl(105, 83, 28)  # Kp, Ki, Kd 105, 83, 28
+SIMULATION_TIME = 25 # in seconds
+angList = []
+max = 0
+introducedLatency = 0.0162
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((IP_ADDRESS,PORT))
 s.listen()
-
-connection, adreess = s.accept()
-print("Connected")
 
 def getControl(angle):
     desiredAngle = float(0)
@@ -33,20 +30,40 @@ def getControl(angle):
     # print(f"control calculated : {control}") 
     return control
 
-# count = 0
-# data = 0
+connection, adreess = s.accept()
+print("Connected")
 
+ts = time.time(); te = time.time()
 while True:
+    print(f"te-ts : {te-ts}")
+    if te-ts > SIMULATION_TIME:
+        break
 # for ii in range(10):
-    if random.randint(1, 10) == 8:
-        time.sleep(.2)
-    ang=connection.recv(MESSAGE_LENGTH).decode()
-    print(ang)
-    ang=ang.split('/n')[-2]
-    print(ang)
-    _angle = float(ang)
+    # if random.randint(1, 10) == 8:
+        # time.sleep(.2)
+
+    time.sleep(introducedLatency)    # 0.016 gives jittery behaviour
+
+    ang = connection.recv(MESSAGE_LENGTH).decode()
+    if ang == DISCONNECT_MESSAGE:
+        break
+   
+    ang = ang.split('/n')[:-1:1]
+    if len(angList) < 50:
+        angList.extend(ang)
+
+    # print(f"ang : {ang}")
+    # print(f"angList : {angList}")
+    print(f"Length of list : {len(angList)}")
+
+    _angle = float(angList.pop(0))
+    if abs(_angle) > max:
+        max = abs(_angle)
     
     ctrl = getControl(_angle)
-    # print(f"angle : {_angle} , control : {ctrl}")
+    print(f"angle : {_angle} , control : {ctrl}") # Angle in Radian
     connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
+    te = time.time()
+    
+print(f"Max Angle : {max*180/np.pi}; Latency : {introducedLatency}")
 connection.close()

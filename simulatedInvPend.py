@@ -6,12 +6,9 @@ from pyconsys.PIDControl import PIDControl
 # import simulatedScenarios as ss
 
 IP_ADDRESS = "127.0.0.1"
-PORT = 5432
+PORT = 1234
 DISCONNECT_MESSAGE = "DISCONNECT"
-# ACKNOWELEDGE_MESSAGE = "ACK"
-# RTS = "RTS"
-# CTS = "CTS"
-MESSAGE_LENGTH = 16
+MESSAGE_LENGTH = 130 #16
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((IP_ADDRESS, PORT))
@@ -117,15 +114,10 @@ class BodyPendulum(Framework):
         controlSignal = 0
 
         a = self.pendulum.angle
-<<<<<<< HEAD
-        # ss.latency(0.2)
-        s.send(bytes(str(round(a,10)), "utf-8"))
-=======
-        to_send=str(round(a,10))+'/n'
+
+        to_send = str(round(a,10))+'/n'
         print(to_send)
         s.send(bytes(to_send, "utf-8"))
-        # s.send(bytes(str(round(a,10)), "utf-8"))
->>>>>>> 2d76f905571fecf5bf1c4a8f80a0be886ee9f648
 
         try : 
             controlSignal = float(s.recv(MESSAGE_LENGTH).decode())
@@ -139,7 +131,7 @@ class BodyPendulum(Framework):
             self.pendelumLJoin.motorSpeed = 0
             self.pendelumRJoin.motorSpeed = 0
         
-        # print(f"angle sent : {a} , control received : {controlSignal}")
+        print(f"angle sent : {a} , control received : {controlSignal}")
 
 if __name__ == "__main__":
     main(BodyPendulum)
