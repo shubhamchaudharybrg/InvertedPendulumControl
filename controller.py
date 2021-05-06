@@ -5,6 +5,7 @@ import socket, time
 import random
 from pyconsys.Control import Control
 from pyconsys.PIDControl import PIDControl
+import simulatedScenarios as ss
 
 IP_ADDRESS = "127.0.0.1"
 PORT = 5432
@@ -12,7 +13,7 @@ DISCONNECT_MESSAGE = "DISCONNECT"
 # ACKNOWELEDGE_MESSAGE = "ACK"
 # RTS = "RTS"
 # CTS = "CTS"
-MESSAGE_LENGTH = 128
+MESSAGE_LENGTH = 13
 PID_CONTROL = PIDControl(105, 100, 60)  # Kp, Ki, Kd 105, 83, 28
 
 pendulumAngle = 0 # Receives from simulated pendulum
@@ -38,7 +39,9 @@ def getControl(angle):
 while True:
 # for ii in range(10):
     # print(f"Data Before : {data}")
+    # ss.latency(0.2)
     data = connection.recv(MESSAGE_LENGTH).decode()
+    newData = data[0:12]
     # print(f"Data After : {data}")
     
     if data == DISCONNECT_MESSAGE:
@@ -47,7 +50,10 @@ while True:
         # if count <= 300: 
 
         controlData = getControl(float(data))
-        print(f"angle : {data} , control : {controlData}")
+        print(f"Angle : {data} , Control : {controlData}")
+        print(f"newData : {newData}")
+
+        ss.latency(0.2)
         connection.send(bytes(str(round(controlData, 10)), "utf-8"))
         
         # elif count > 450:
