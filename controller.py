@@ -34,11 +34,14 @@ def getControl(angle):
 
 while True:
 # for ii in range(10):
-    if random.randint(1, 1000) == 8:
-        time.sleep(20)
-
-    _angle = float(connection.recv(MESSAGE_LENGTH).decode())
+    if random.randint(1, 10) == 8:
+        time.sleep(.2)
+    ang=connection.recv(MESSAGE_LENGTH).decode()
+    print(ang)
+    ang=ang.split('/n')[-2]
+    print(ang)
+    _angle = float(ang)
     
     ctrl = getControl(_angle)
-    print(f"angle : {_angle} , control : {ctrl}")
+    # print(f"angle : {_angle} , control : {ctrl}")
     connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
