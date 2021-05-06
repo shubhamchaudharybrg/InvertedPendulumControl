@@ -38,26 +38,15 @@ def getControl(angle):
 
 while True:
 # for ii in range(10):
-    # print(f"Data Before : {data}")
-    # ss.latency(0.2)
-    data = connection.recv(MESSAGE_LENGTH).decode()
-    newData = data[0:12]
-    # print(f"Data After : {data}")
+    if random.randint(1, 10) == 8:
+        time.sleep(.2)
+    ang=connection.recv(MESSAGE_LENGTH).decode()
+    print(ang)
+    ang=ang.split('/n')[-2]
+    print(ang)
+    _angle = float(ang)
     
-    if data == DISCONNECT_MESSAGE:
-        break
-    else:
-        # if count <= 300: 
-
-        controlData = getControl(float(data))
-        print(f"Angle : {data} , Control : {controlData}")
-        print(f"newData : {newData}")
-
-        ss.latency(0.2)
-        connection.send(bytes(str(round(controlData, 10)), "utf-8"))
-        
-        # elif count > 450:
-            # count = 0
-    # print(count)
-    # count += 1
+    ctrl = getControl(_angle)
+    # print(f"angle : {_angle} , control : {ctrl}")
+    connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
 connection.close()

@@ -117,8 +117,15 @@ class BodyPendulum(Framework):
         controlSignal = 0
 
         a = self.pendulum.angle
+<<<<<<< HEAD
         # ss.latency(0.2)
         s.send(bytes(str(round(a,10)), "utf-8"))
+=======
+        to_send=str(round(a,10))+'/n'
+        print(to_send)
+        s.send(bytes(to_send, "utf-8"))
+        # s.send(bytes(str(round(a,10)), "utf-8"))
+>>>>>>> 2d76f905571fecf5bf1c4a8f80a0be886ee9f648
 
         try : 
             controlSignal = float(s.recv(MESSAGE_LENGTH).decode())
@@ -132,7 +139,7 @@ class BodyPendulum(Framework):
             self.pendelumLJoin.motorSpeed = 0
             self.pendelumRJoin.motorSpeed = 0
         
-        print(f"angle sent : {a} , control received : {controlSignal}")
+        # print(f"angle sent : {a} , control received : {controlSignal}")
 
 if __name__ == "__main__":
     main(BodyPendulum)
