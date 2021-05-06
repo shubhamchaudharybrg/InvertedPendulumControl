@@ -7,9 +7,9 @@ from pyconsys.PIDControl import PIDControl
 IP_ADDRESS = "127.0.0.1"
 PORT = 5432
 DISCONNECT_MESSAGE = "DISCONNECT"
-ACKNOWELEDGE_MESSAGE = "ACK"
-RTS = "RTS"
-CTS = "CTS"
+# ACKNOWELEDGE_MESSAGE = "ACK"
+# RTS = "RTS"
+# CTS = "CTS"
 MESSAGE_LENGTH = 128
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -88,6 +88,7 @@ class BodyPendulum(Framework):
             enableMotor=True,
             # motorSpeed=10
         )
+        self.pendulum.angle = 0.1 # intial angle of pendulum
 
 
     def destroyWorld(self):
