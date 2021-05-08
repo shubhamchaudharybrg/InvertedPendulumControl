@@ -6,7 +6,7 @@ from pyconsys.PIDControl import PIDControl
 # import simulatedScenarios as ss
 
 IP_ADDRESS = "127.0.0.1"
-PORT = 1234
+PORT = 12345
 DISCONNECT_MESSAGE = "DISCONNECT"
 MESSAGE_LENGTH = 130 #16
 

@@ -14,9 +14,8 @@ MESSAGE_LENGTH = 130 #13
 PID_CONTROL = PIDControl(105, 83, 28)  # Kp, Ki, Kd
 angList = []
 _max = 0
-# no_of_packet_lost = 
-SIMULATION_TIME = 100 # in sec
-introducedLatency = 0.014
+SIMULATION_TIME = 40 # in sec
+# introducedJitter = np.random.rand(1)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((IP_ADDRESS,PORT))
@@ -36,40 +35,31 @@ print("Connected")
 ts = time.time(); te = time.time()
 while True:
     # print(f"te-ts : {te-ts}")
-    currentTime = te-ts
-    if currentTime > SIMULATION_TIME:
+    introducedJitter = np.random.uniform(0,0.01)
+    if te-ts > SIMULATION_TIME:
         break
 
+
+    time.sleep(introducedJitter)  # Introduces Jitter 
+
     ang = connection.recv(MESSAGE_LENGTH).decode()
+
     if ang == DISCONNECT_MESSAGE:
         break
    
     ang = ang.split('/n')[:-1:1]
-
+    # print(ang)
+    
     angList.extend(ang)
+    # print(angList)
 
     _angle = float(angList.pop(0))
     if abs(_angle) > _max:
         _max = abs(_angle)
     
     ctrl = getControl(_angle)
-
-    ############################################################################
-    # Simulting Packet Loss(in %)
-    if np.random.randint(0,6) != 2:
-        # if currentTime > 10 and currentTime < 10.01 :
-            # connection.send(bytes(str(800, "utf-8")))
-            # ctrl = 1000.0
-        # else:
-        #     # connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
-        #     ctrl = getControl(_angle)
-
-        connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
-    else:
-        ctrl = 0
-    ############################################################################
-
-    print(f"angle : {_angle} , control : {ctrl} , simulationTime : {currentTime}") # Angle in Radian
+    # print(f"Angle : {_angle} , Control : {ctrl} ; Latency : {introducedJitter}") # Angle in Radian
+    print(introducedJitter)
     connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
     te = time.time()
     

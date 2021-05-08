@@ -16,7 +16,7 @@ angList = []
 _max = 0
 # no_of_packet_lost = 
 SIMULATION_TIME = 100 # in sec
-introducedLatency = 0.014
+introducedLatency = 0.02
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((IP_ADDRESS,PORT))
@@ -40,6 +40,8 @@ while True:
     if currentTime > SIMULATION_TIME:
         break
 
+    time.sleep(introducedLatency)
+
     ang = connection.recv(MESSAGE_LENGTH).decode()
     if ang == DISCONNECT_MESSAGE:
         break
@@ -56,21 +58,12 @@ while True:
 
     ############################################################################
     # Simulting Packet Loss(in %)
-    if np.random.randint(0,6) != 2:
-        # if currentTime > 10 and currentTime < 10.01 :
-            # connection.send(bytes(str(800, "utf-8")))
-            # ctrl = 1000.0
-        # else:
-        #     # connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
-        #     ctrl = getControl(_angle)
-
+    if np.random.randint(0,5) != 1:
         connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
-    else:
-        ctrl = 0
     ############################################################################
 
     print(f"angle : {_angle} , control : {ctrl} , simulationTime : {currentTime}") # Angle in Radian
-    connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
+    # connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
     te = time.time()
     
 print(f"Max Angle : {_max*180/np.pi}")
