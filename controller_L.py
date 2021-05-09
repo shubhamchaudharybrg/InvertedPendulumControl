@@ -7,7 +7,7 @@ from pyconsys.Control import Control
 from pyconsys.PIDControl import PIDControl
 import numpy as np
 
-IP_ADDRESS = "192.168.43.98" #"192.168.137.1"
+IP_ADDRESS = "127.0.0.1" #"192.168.137.1"
 PORT = 12345
 DISCONNECT_MESSAGE = "DISCONNECT"
 MESSAGE_LENGTH = 130 #13

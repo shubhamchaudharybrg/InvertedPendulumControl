@@ -7,16 +7,14 @@ from pyconsys.Control import Control
 from pyconsys.PIDControl import PIDControl
 import numpy as np
 
-IP_ADDRESS = "192.168.43.98" #"127.0.0.1" #"192.168.43.98" #"192.168.137.1"
+IP_ADDRESS = "127.0.0.1" #"127.0.0.1" #"192.168.43.98" #"192.168.137.1"
 PORT = 12345
 DISCONNECT_MESSAGE = "DISCONNECT"
 MESSAGE_LENGTH = 130 #13
 PID_CONTROL = PIDControl(105, 83, 28)  # Kp, Ki, Kd
 angList = []
 _max = 0
-# no_of_packet_lost = 
 SIMULATION_TIME = 25 # in sec
-# introducedLatency = 0.016
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((IP_ADDRESS,PORT))
@@ -42,8 +40,6 @@ while True:
     if currentTime > SIMULATION_TIME:
         break
 
-    # time.sleep(introducedLatency)
-
     ang = connection.recv(MESSAGE_LENGTH).decode()
     if ang == DISCONNECT_MESSAGE:
         break
@@ -66,26 +62,17 @@ while True:
     # Simulting Packet Loss(in %)
     # else:
     if 0.1 <= np.random.uniform(0,1) < 0.6 :
-        # print(1)
         connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
         count1 += 1
-    # if np.random.randint(0,5) != 1:
-    #     connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
+    
     else:
-        # print(0)
         count2 += 1
-    #     connection.send(bytes("0"), "utf-8")
     ############################################################################
     # if currentTime > 18:
     if abs(_angle) > _max:
         _max = abs(_angle)
 
-    # print(f"angle : {_angle} , control : {ctrl} , simulationTime : {currentTime}") # Angle in Radian
-    # connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
     te = time.time()
     
-print(f"Max Angle : {_max*180/np.pi}")
-print(len(angList))
-print(count1+count2)
-print(count1/(count1+count2))
+print(f"Max Angle : {_max*180/np.pi} ; Packet Loss % : {count2/(count1+count2)}")
 connection.close()

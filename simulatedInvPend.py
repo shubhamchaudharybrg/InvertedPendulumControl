@@ -136,9 +136,7 @@ class BodyPendulum(Framework):
             print(0)
         
         self.count += 1
-        print(self.count)
-        # print(f"angle sent : {a} , control received : {controlSignal}")
-        # print(controlSignal)
+        print(f"angle sent : {a} , control received : {controlSignal}")
 
 if __name__ == "__main__":
     main(BodyPendulum)

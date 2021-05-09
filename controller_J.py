@@ -7,7 +7,7 @@ from pyconsys.Control import Control
 from pyconsys.PIDControl import PIDControl
 import numpy as np
 
-IP_ADDRESS = "192.168.43.98" #"127.0.0.1" #"192.168.43.98" #"192.168.137.1"
+IP_ADDRESS = "127.0.0.1" #"127.0.0.1" #"192.168.43.98" #"192.168.137.1"
 PORT = 12345
 DISCONNECT_MESSAGE = "DISCONNECT"
 MESSAGE_LENGTH = 130 #13
@@ -15,7 +15,6 @@ PID_CONTROL = PIDControl(105, 83, 28)  # Kp, Ki, Kd
 angList = []
 _max = 0
 SIMULATION_TIME = 25 # in sec
-# introducedJitter = np.random.rand(1)
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((IP_ADDRESS,PORT))
@@ -35,7 +34,7 @@ print("Connected")
 ts = time.time(); te = time.time()
 while True:
     # print(f"te-ts : {te-ts}")
-    introducedJitter = np.random.uniform(0,0.1)
+    introducedJitter = np.random.uniform(0,0.01)
     if te-ts > SIMULATION_TIME:
         break
 
@@ -57,7 +56,6 @@ while True:
         _max = abs(_angle)
     
     ctrl = getControl(_angle)
-    # print(f"Angle : {_angle} , Control : {ctrl} ; Latency : {introducedJitter}") # Angle in Radian
     print(introducedJitter)
     connection.send(bytes(str(round(ctrl, 10)), "utf-8"))
     te = time.time()
