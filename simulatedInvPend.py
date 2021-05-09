@@ -28,6 +28,7 @@ class BodyPendulum(Framework):
     def createWorld(self):
         self._isLiving = True
         self._auto = True
+        self.count = 0
 
         self.ground = self.world.CreateBody(
             shapes=b2EdgeShape(vertices=[(-40, 0), (40, 0)])
@@ -108,6 +109,7 @@ class BodyPendulum(Framework):
             s.send(bytes(DISCONNECT_MESSAGE, "utf-8"))
             s.close()
 
+    
     def Step(self, settings):
         super(BodyPendulum, self).Step(settings)
         
@@ -116,7 +118,7 @@ class BodyPendulum(Framework):
         a = self.pendulum.angle
 
         to_send = str(round(a,10))+'/n'
-        print(to_send)
+        # print(to_send)
         s.send(bytes(to_send, "utf-8"))
 
         try : 
@@ -125,13 +127,18 @@ class BodyPendulum(Framework):
             self.pendelumRJoin.maxMotorTorque = 1000
             self.pendelumLJoin.motorSpeed = controlSignal
             self.pendelumRJoin.motorSpeed = controlSignal
+            print(1)
         except :
             self.pendelumLJoin.maxMotorTorque = 1
             self.pendelumRJoin.maxMotorTorque = 1
             self.pendelumLJoin.motorSpeed = 0
             self.pendelumRJoin.motorSpeed = 0
+            print(0)
         
-        print(f"angle sent : {a} , control received : {controlSignal}")
+        self.count += 1
+        print(self.count)
+        # print(f"angle sent : {a} , control received : {controlSignal}")
+        # print(controlSignal)
 
 if __name__ == "__main__":
     main(BodyPendulum)
