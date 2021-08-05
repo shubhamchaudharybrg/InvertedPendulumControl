@@ -1,5 +1,6 @@
 # This is the remote controller from simulated inverted pendulum.
 # It utilizes PID control for stabalizing the pendulum.
+# This file simulates Latency in network connection.
 
 import socket, time
 import random
