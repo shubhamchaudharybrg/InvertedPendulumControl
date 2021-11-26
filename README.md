@@ -11,7 +11,7 @@ Has code to simulate jitter in the socket connection between controller on Lapto
 **controller_L.py**\
 Has code to simulate High Latency in the socket connection between controller on Laptop and pendulum on RPi.
 
-**controller_PL_Random.py**
+**controller_PL_Random.py**\
 Has code to simulate random packet loss in the socket connection between controller on Laptop and pendulum on RPi.
 
 **simulatedInvPend.py**\
